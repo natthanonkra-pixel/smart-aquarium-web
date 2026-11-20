@@ -1,17 +1,20 @@
 /**
  * login-app.js — Login page (3D tank + glass sign-in card).
  * Sign-in uses the original auth.js chain (ThingsBoard Cloud) unchanged.
- * The tank and the stat strip on this page are a clearly labelled demo preview.
+ * No sensor values are shown before sign-in; the tank here is decorative.
  */
 import React, { useState, useRef } from 'react';
 import { createRoot } from 'react-dom/client';
 import { motion } from 'framer-motion';
-import { User, Lock, Eye, EyeOff, LogIn, CircleAlert, Cloud, FlaskConical } from 'lucide-react';
+import {
+  User, Lock, Eye, EyeOff, LogIn, CircleAlert, Cloud, FlaskConical,
+  Thermometer, Droplets, Sun, Utensils, Cpu,
+} from 'lucide-react';
 import { html } from './h.js';
 import { PAGES } from '../js/config.js';
 import { signIn, LoginError, MESSAGES } from '../js/auth.js';
-import { useAquarium, val, enterDemo, DEMO_KEY } from './data.js';
-import { Header, StatCards } from './components.js';
+import { enterDemo, DEMO_KEY } from './data.js';
+import { Header } from './components.js';
 import AquariumTank from './tank3d.js';
 
 function LoginCard() {
@@ -110,10 +113,32 @@ function LoginCard() {
     </${motion.form}>`;
 }
 
-const EMPTY = {};
+/** What the system does — a static overview, no sensor values before sign-in. */
+const FEATURES = [
+  { icon: Thermometer, title: 'Temperature control', text: 'DS18B20 + cooling fan with hysteresis', tone: 'text-cyan-300' },
+  { icon: Droplets, title: 'Water level alert', text: 'Float switch + buzzer warning', tone: 'text-sky-300' },
+  { icon: Sun, title: 'Sunrise lighting', text: 'LED PWM follows an RTC day cycle', tone: 'text-amber-300' },
+  { icon: Utensils, title: 'Scheduled feeding', text: 'Servo feeder by time or remote', tone: 'text-emerald-300' },
+  { icon: Cpu, title: 'TinyML anomaly', text: 'On-device temperature pattern check', tone: 'text-yellow-300' },
+];
+
+function Features() {
+  return html`
+    <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
+      ${FEATURES.map((f, i) => html`
+        <${motion.div} key=${f.title} className="glass flex items-start gap-3 p-4"
+          initial=${{ opacity: 0, y: 16 }} animate=${{ opacity: 1, y: 0 }} transition=${{ delay: 0.3 + i * 0.07 }}
+          whileHover=${{ y: -3 }}>
+          <span className=${`grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-slate-900/60 ${f.tone}`}><${f.icon} size=${18} /></span>
+          <div className="min-w-0">
+            <p className="text-sm font-semibold text-white">${f.title}</p>
+            <p className="text-xs leading-snug text-cyan-100/55">${f.text}</p>
+          </div>
+        </${motion.div}>`)}
+    </div>`;
+}
 
 function App() {
-  const { values, history } = useAquarium({ preview: true });
   return html`
     <div className="mx-auto flex min-h-screen max-w-[1400px] flex-col">
       <${Header} conn=${{ state: 'connecting', label: 'Ready to connect' }} />
@@ -121,18 +146,12 @@ function App() {
         <div className="grid flex-1 grid-cols-1 items-center gap-6 lg:grid-cols-[1.45fr_1fr]">
           <${motion.div} initial=${{ opacity: 0, scale: 0.96 }} animate=${{ opacity: 1, scale: 1 }} transition=${{ duration: 0.8 }}
             className="relative h-[340px] sm:h-[460px] lg:h-[560px]">
-            <${AquariumTank} temperature=${val(values.temperature)} waterLow=${false}
-              sun=${Math.max(70, val(values.sun) || 0)} fan=${val(values.fan)} className="h-full w-full" />
+            <${AquariumTank} temperature=${26} waterLow=${false} sun=${80} fan=${false} className="h-full w-full" />
             <p className="pointer-events-none absolute bottom-2 left-1/2 -translate-x-1/2 text-xs text-cyan-100/40">Drag to rotate · scroll to zoom</p>
           </${motion.div}>
           <div className="flex min-w-0 justify-center lg:justify-end"><${LoginCard} /></div>
         </div>
-        <div>
-          <p className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-cyan-300/70">
-            <${Cloud} size=${14} /> Sign in to see live tank data
-          </p>
-          <${StatCards} values=${EMPTY} history=${[]} />
-        </div>
+        <${Features} />
       </main>
     </div>`;
 }
