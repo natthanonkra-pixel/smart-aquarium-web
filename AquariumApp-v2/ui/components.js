@@ -184,7 +184,7 @@ export function StatCards({ values, history, onFeed, feeding }) {
 
       <${Card} icon=${html`<${Utensils} size=${16} />`} label="Feeding" delay=${0.2} accent="text-emerald-300">
         <div className="flex items-end justify-between gap-2">
-          <span className="text-3xl font-bold text-white">${feeding ? '…' : 'Ready'}</span>
+          <span className="text-3xl font-bold text-white">${feeding ? '…' : values.feedCount === undefined ? '--' : 'Ready'}</span>
           ${onFeed && html`<button onClick=${onFeed} disabled=${feeding} className="btn-neon px-3 py-1 text-xs">Feed</button>`}
         </div>
         <p className="text-xs text-cyan-100/50">Fed today: ${feedCount == null ? '--' : feedCount} times</p>

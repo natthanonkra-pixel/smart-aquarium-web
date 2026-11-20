@@ -110,6 +110,8 @@ function LoginCard() {
     </${motion.form}>`;
 }
 
+const EMPTY = {};
+
 function App() {
   const { values, history } = useAquarium({ preview: true });
   return html`
@@ -126,10 +128,10 @@ function App() {
           <div className="flex min-w-0 justify-center lg:justify-end"><${LoginCard} /></div>
         </div>
         <div>
-          <p className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-amber-300/80">
-            <${FlaskConical} size=${14} /> Demo preview · sign in to see live tank data
+          <p className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-cyan-300/70">
+            <${Cloud} size=${14} /> Sign in to see live tank data
           </p>
-          <${StatCards} values=${values} history=${history} />
+          <${StatCards} values=${EMPTY} history=${[]} />
         </div>
       </main>
     </div>`;
