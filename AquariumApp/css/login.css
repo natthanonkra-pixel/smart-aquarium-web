@@ -1,0 +1,201 @@
+@import "common.css";
+
+/* ==========================================================================
+   Smart Aquarium — login.css (mobile-first: 320px base → 768px → 1280px)
+   ========================================================================== */
+
+:root {
+  --login-max-width: 26rem;
+  --logo-size: 2.75rem;
+  --bubble-rise: -110vh;
+  --bubble-start: -2rem;
+  --bubble-drift: 1.5rem;
+}
+
+.login-page {
+  display: grid;
+  place-items: center;
+  padding: var(--space-5) var(--space-4);
+  overflow-x: hidden;
+}
+
+.login {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  width: 100%;
+  max-width: var(--login-max-width);
+}
+
+/* ---- Brand ---------------------------------------------------------------- */
+
+.login__brand {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.login__logo {
+  width: var(--logo-size);
+  height: var(--logo-size);
+  color: var(--color-accent);
+  filter: drop-shadow(var(--shadow-logo));
+}
+
+.login__logo-eye {
+  fill: var(--color-bg-top);
+}
+
+.login__eyebrow {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  letter-spacing: var(--letter-spacing-caps);
+  text-transform: uppercase;
+  color: var(--color-accent);
+}
+
+.login__title {
+  font-size: var(--font-size-xl);
+}
+
+/* ---- Card ----------------------------------------------------------------- */
+
+.login__card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.login__intro {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.login__heading {
+  font-size: var(--font-size-lg);
+}
+
+.login__hint {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+.login__submit {
+  margin-top: var(--space-2);
+}
+
+.login__footer {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-faint);
+  text-align: center;
+}
+
+/* ---- Password reveal ------------------------------------------------------ */
+
+.password {
+  position: relative;
+}
+
+.password__input {
+  padding-right: calc(var(--touch-target) + var(--space-2));
+}
+
+.password__toggle {
+  position: absolute;
+  top: 50%;
+  right: var(--space-1);
+  display: grid;
+  place-items: center;
+  width: var(--touch-target);
+  height: var(--touch-target);
+  padding: 0;
+  color: var(--color-text-muted);
+  background: transparent;
+  border: 0;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transform: translateY(-50%);
+  transition: color var(--duration-base) var(--easing), background var(--duration-base) var(--easing);
+}
+
+.password__toggle:hover {
+  color: var(--color-text);
+  background: var(--color-surface-strong);
+}
+
+.password__toggle[aria-pressed="true"] {
+  color: var(--color-accent);
+}
+
+.password__toggle svg {
+  width: var(--icon-size);
+  height: var(--icon-size);
+}
+
+/* ---- Ambient bubbles (decorative) ---------------------------------------- */
+
+.bubbles {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.bubbles span {
+  position: absolute;
+  bottom: var(--bubble-start);
+  width: var(--bubble-size, 0.75rem);
+  height: var(--bubble-size, 0.75rem);
+  border: var(--border-width) solid var(--bubble-border);
+  border-radius: 50%;
+  background: var(--bubble-color);
+  animation: rise var(--bubble-duration, 18s) linear infinite;
+  animation-delay: var(--bubble-delay, 0s);
+}
+
+.bubbles span:nth-child(1) { left: 8%;  --bubble-size: 0.5rem;  --bubble-duration: 16s; }
+.bubbles span:nth-child(2) { left: 22%; --bubble-size: 1rem;    --bubble-duration: 22s; --bubble-delay: -6s; }
+.bubbles span:nth-child(3) { left: 64%; --bubble-size: 0.625rem; --bubble-duration: 19s; --bubble-delay: -11s; }
+.bubbles span:nth-child(4) { left: 81%; --bubble-size: 1.25rem; --bubble-duration: 26s; --bubble-delay: -3s; }
+.bubbles span:nth-child(5) { left: 92%; --bubble-size: 0.5rem;  --bubble-duration: 14s; --bubble-delay: -8s; }
+
+@keyframes rise {
+  to {
+    transform: translate3d(var(--bubble-drift), var(--bubble-rise), 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bubbles {
+    display: none;
+  }
+}
+
+/* ---- 768px ---------------------------------------------------------------- */
+
+@media (min-width: 48rem) {
+  .login-page {
+    padding: var(--space-7) var(--space-6);
+  }
+
+  .login__card {
+    padding: var(--space-6);
+    gap: var(--space-5);
+  }
+
+  .login__title {
+    font-size: var(--font-size-2xl);
+  }
+}
+
+/* ---- 1280px --------------------------------------------------------------- */
+
+@media (min-width: 80rem) {
+  :root {
+    --login-max-width: 28rem;
+    --logo-size: 3.25rem;
+  }
+}

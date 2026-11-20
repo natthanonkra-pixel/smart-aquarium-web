@@ -1,0 +1,436 @@
+/* ==========================================================================
+   Smart Aquarium — common.css
+   Global design tokens + base styles. Every design value lives here as a
+   CSS custom property (Skill.md § Visual Identity). Mobile-first.
+   ========================================================================== */
+
+:root {
+  /* ---- Palette: deep water (HSL-tuned) ---------------------------------- */
+  --hue-navy: 214;
+  --hue-teal: 174;
+
+  --color-bg-top: hsl(214 58% 9%);
+  --color-bg-bottom: hsl(208 55% 15%);
+  --color-bg-glow: hsl(186 70% 40% / 0.18);
+
+  --color-surface: hsl(205 60% 70% / 0.06);
+  --color-surface-strong: hsl(205 60% 70% / 0.1);
+  --color-surface-header: hsl(214 58% 9% / 0.72);
+  --color-surface-input: hsl(214 50% 8% / 0.55);
+  --color-border: hsl(195 50% 75% / 0.12);
+  --color-border-strong: hsl(186 55% 60% / 0.35);
+
+  --color-text: hsl(195 35% 92%);
+  --color-text-muted: hsl(200 18% 66%);
+  --color-text-faint: hsl(205 15% 48%);
+  --color-text-on-accent: hsl(214 60% 10%);
+
+  --color-accent: hsl(174 62% 47%);
+  --color-accent-strong: hsl(174 70% 40%);
+  --color-accent-2: hsl(188 70% 50%);
+  --color-accent-soft: hsl(174 62% 47% / 0.14);
+
+  --color-danger: hsl(8 78% 64%);
+  --color-danger-soft: hsl(8 78% 64% / 0.14);
+  --color-danger-border: hsl(8 78% 64% / 0.45);
+  --color-warning: hsl(38 90% 60%);
+  --color-warning-soft: hsl(38 90% 60% / 0.14);
+  --color-warning-border: hsl(38 90% 60% / 0.45);
+  --color-success: hsl(150 55% 52%);
+  --color-success-glow: hsl(150 55% 52% / 0.55);
+
+  --color-focus-ring: hsl(180 85% 65% / 0.75);
+  --color-skeleton-base: hsl(205 40% 60% / 0.08);
+  --color-skeleton-shine: hsl(205 40% 75% / 0.16);
+
+  /* Decorative */
+  --bubble-color: hsl(186 70% 75% / 0.12);
+  --bubble-border: hsl(186 70% 80% / 0.18);
+
+  /* Chart (read by js/chart.js via getComputedStyle) */
+  --chart-line: hsl(178 70% 55%);
+  --chart-fill-top: hsl(178 70% 55% / 0.28);
+  --chart-fill-bottom: hsl(178 70% 55% / 0);
+  --chart-grid: hsl(200 40% 70% / 0.09);
+  --chart-axis-text: hsl(200 18% 66%);
+  --chart-ref-on: hsl(8 78% 64% / 0.85);
+  --chart-ref-off: hsl(200 80% 65% / 0.8);
+  --chart-label-bg: hsl(212 55% 13% / 0.92);
+  --chart-font-size: 0.6875rem;
+
+  /* Gradients */
+  --gradient-page: radial-gradient(60rem 40rem at 85% -10%, var(--color-bg-glow), transparent 60%),
+    linear-gradient(180deg, var(--color-bg-top), var(--color-bg-bottom));
+  --gradient-cta: linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-2) 100%);
+  --gradient-sun: linear-gradient(90deg, hsl(38 90% 60%) 0%, hsl(48 95% 68%) 100%);
+  --gradient-cta-hover: linear-gradient(135deg, hsl(174 68% 52%) 0%, hsl(188 76% 56%) 100%);
+
+  /* ---- Typography ------------------------------------------------------- */
+  --font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-bold: 700;
+
+  --font-size-xs: 0.75rem;
+  --font-size-sm: 0.875rem;
+  --font-size-md: 1rem;
+  --font-size-lg: 1.25rem;
+  --font-size-xl: 1.625rem;
+  --font-size-2xl: 2.25rem;
+  --line-height-tight: 1.2;
+  --line-height-base: 1.55;
+  --letter-spacing-caps: 0.08em;
+  --letter-spacing-label: 0.04em;
+
+  /* ---- Spacing (0.5rem rhythm) ------------------------------------------ */
+  --space-unit: 0.5rem;
+  --space-1: calc(var(--space-unit) * 0.5); /* 0.25rem */
+  --space-2: var(--space-unit);             /* 0.5rem  */
+  --space-3: calc(var(--space-unit) * 1.5); /* 0.75rem */
+  --space-4: calc(var(--space-unit) * 2);   /* 1rem    */
+  --space-5: calc(var(--space-unit) * 3);   /* 1.5rem  */
+  --space-6: calc(var(--space-unit) * 4);   /* 2rem    */
+  --space-7: calc(var(--space-unit) * 6);   /* 3rem    */
+
+  /* ---- Shape & depth ---------------------------------------------------- */
+  --radius-sm: 0.5rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1.25rem;
+  --radius-pill: 999rem;
+  --border-width: 1px;
+  --focus-ring-width: 3px;
+  --focus-ring-offset: 2px;
+  --stroke-indicator: 2px;
+
+  --shadow-card: 0 1.25rem 2.5rem -1rem hsl(214 70% 4% / 0.7), inset 0 1px 0 hsl(195 60% 90% / 0.06);
+  --shadow-cta: 0 0.5rem 1.25rem -0.5rem hsl(178 70% 45% / 0.55);
+  --shadow-cta-hover: 0 0.75rem 1.75rem -0.5rem hsl(178 70% 45% / 0.7);
+  --shadow-logo: 0 0.25rem 0.75rem hsl(174 62% 47% / 0.35);
+  --glass-blur: blur(14px) saturate(140%);
+
+  /* ---- Sizing ----------------------------------------------------------- */
+  --touch-target: 2.75rem; /* 44px */
+  --icon-size: 1.25rem;
+  --spinner-size: 1.125rem;
+  --container-max: 75rem;
+
+  /* ---- Motion ----------------------------------------------------------- */
+  --duration-fast: 150ms;
+  --duration-base: 220ms;
+  --duration-slow: 300ms;
+  --duration-spin: 700ms;
+  --duration-shimmer: 1.4s;
+  --duration-blink: 1s;
+  --duration-pulse: 2s;
+  --press-offset: 1px;
+  --enter-offset: -0.25rem;
+  --pulse-spread: 0.5rem;
+  --easing: ease-out;
+}
+
+/* ==========================================================================
+   Reset & base
+   ========================================================================== */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  min-height: 100dvh;
+  font-family: var(--font-family);
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-base);
+  color: var(--color-text);
+  background: var(--gradient-page);
+  background-attachment: fixed;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3,
+p {
+  margin: 0;
+}
+
+h1,
+h2,
+h3 {
+  line-height: var(--line-height-tight);
+  font-weight: var(--font-weight-bold);
+}
+
+[hidden] {
+  display: none !important;
+}
+
+/* Technical constants kept literal on purpose (not design values):
+   1px visually-hidden clip, autofill inset hack, 1ms reduced-motion override. */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Visible, accessible focus everywhere (never browser default) */
+:focus {
+  outline: none;
+}
+
+:focus-visible {
+  outline: var(--focus-ring-width) solid var(--color-focus-ring);
+  outline-offset: var(--focus-ring-offset);
+}
+
+/* ==========================================================================
+   Glass card
+   ========================================================================== */
+
+.card {
+  background: var(--color-surface);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
+  padding: var(--space-5);
+}
+
+/* ==========================================================================
+   Buttons
+   ========================================================================== */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  min-height: var(--touch-target);
+  min-width: var(--touch-target);
+  padding: var(--space-2) var(--space-5);
+  font: inherit;
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-tight);
+  border: var(--border-width) solid transparent;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  -webkit-appearance: none;
+  appearance: none;
+  transition: background var(--duration-base) var(--easing),
+    box-shadow var(--duration-base) var(--easing),
+    transform var(--duration-fast) var(--easing),
+    border-color var(--duration-base) var(--easing),
+    color var(--duration-base) var(--easing),
+    opacity var(--duration-base) var(--easing);
+}
+
+.btn:active:not(:disabled) {
+  transform: translateY(var(--press-offset)) scale(0.99);
+}
+
+.btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.btn--primary {
+  color: var(--color-text-on-accent);
+  background: var(--gradient-cta);
+  box-shadow: var(--shadow-cta);
+}
+
+.btn--primary:hover:not(:disabled) {
+  background: var(--gradient-cta-hover);
+  box-shadow: var(--shadow-cta-hover);
+}
+
+.btn--primary:disabled {
+  box-shadow: none;
+}
+
+.btn--ghost {
+  color: var(--color-text);
+  background: var(--color-surface);
+  border-color: var(--color-border);
+}
+
+.btn--ghost:hover:not(:disabled) {
+  background: var(--color-surface-strong);
+  border-color: var(--color-border-strong);
+}
+
+.btn--block {
+  width: 100%;
+}
+
+/* ==========================================================================
+   Form fields
+   ========================================================================== */
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.field__label {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-muted);
+}
+
+.input {
+  width: 100%;
+  min-height: var(--touch-target);
+  padding: var(--space-3) var(--space-4);
+  font: inherit;
+  font-size: var(--font-size-md);
+  color: var(--color-text);
+  background: var(--color-surface-input);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-md);
+  -webkit-appearance: none;
+  appearance: none;
+  transition: border-color var(--duration-base) var(--easing),
+    box-shadow var(--duration-base) var(--easing),
+    background var(--duration-base) var(--easing);
+}
+
+.input::placeholder {
+  color: var(--color-text-faint);
+}
+
+.input:hover {
+  border-color: var(--color-border-strong);
+}
+
+.input:focus-visible {
+  outline: none;
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 var(--focus-ring-width) var(--color-accent-soft);
+}
+
+.input[aria-invalid="true"] {
+  border-color: var(--color-danger-border);
+}
+
+.input:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Keep autofill on-theme */
+.input:-webkit-autofill {
+  -webkit-text-fill-color: var(--color-text);
+  -webkit-box-shadow: 0 0 0 100rem var(--color-surface-input) inset;
+  caret-color: var(--color-text);
+}
+
+/* ==========================================================================
+   Messages (error = color + icon + text)
+   ========================================================================== */
+
+.message {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  font-size: var(--font-size-sm);
+  border-radius: var(--radius-md);
+  border: var(--border-width) solid transparent;
+  animation: message-in var(--duration-base) var(--easing);
+}
+
+.message__icon {
+  flex: none;
+  width: var(--icon-size);
+  height: var(--icon-size);
+}
+
+.message--error {
+  color: var(--color-danger);
+  background: var(--color-danger-soft);
+  border-color: var(--color-danger-border);
+}
+
+@keyframes message-in {
+  from {
+    opacity: 0;
+    transform: translateY(var(--enter-offset));
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ==========================================================================
+   Loading: spinner + skeleton
+   ========================================================================== */
+
+.spinner {
+  flex: none;
+  width: var(--spinner-size);
+  height: var(--spinner-size);
+  border: var(--stroke-indicator) solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: spin var(--duration-spin) linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.skeleton {
+  display: inline-block;
+  min-width: 3ch;
+  color: transparent !important;
+  border-radius: var(--radius-sm);
+  background: linear-gradient(90deg, var(--color-skeleton-base) 25%, var(--color-skeleton-shine) 50%, var(--color-skeleton-base) 75%);
+  background-size: 200% 100%;
+  animation: shimmer var(--duration-shimmer) ease-in-out infinite;
+}
+
+@keyframes shimmer {
+  from {
+    background-position: 200% 0;
+  }
+  to {
+    background-position: -200% 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* Keep functional spin indicators (spinner, fan ON) — they carry state.
+     Remove decorative motion only. */
+  *,
+  *::before,
+  *::after {
+    transition-duration: 1ms !important;
+  }
+
+  .skeleton,
+  .message {
+    animation: none;
+  }
+}

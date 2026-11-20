@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>Sign in · Smart Aquarium</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap">
+  <link rel="stylesheet" href="css/login.css">
+  <script type="module" src="js/login.js"></script>
+</head>
+<body class="login-page">
+  <div class="bubbles" aria-hidden="true">
+    <span></span><span></span><span></span><span></span><span></span>
+  </div>
+
+  <main class="login">
+    <header class="login__brand">
+      <svg class="login__logo" viewBox="0 0 48 48" aria-hidden="true">
+        <path d="M6 26c5-9 13-13 22-11 4 1 8 4 10 7l5-4-1 8 1 8-5-4c-2 3-6 6-10 7-9 2-17-2-22-11z" fill="currentColor" opacity="0.9"/>
+        <circle class="login__logo-eye" cx="30" cy="24" r="2"/>
+      </svg>
+      <div>
+        <p class="login__eyebrow">Smart Aquarium</p>
+        <h1 class="login__title">Tank monitor</h1>
+      </div>
+    </header>
+
+    <form class="card login__card" id="login-form" novalidate>
+      <div class="login__intro">
+        <h2 class="login__heading">Sign in</h2>
+        <p class="login__hint">Use your customer account to watch water temperature, water level and light, and to feed the fish remotely.</p>
+      </div>
+
+      <div class="field">
+        <label class="field__label" for="username">Username</label>
+        <input class="input" id="username" name="username" type="email" inputmode="email"
+               autocomplete="username" placeholder="owner@aquarium.local" required spellcheck="false">
+      </div>
+
+      <div class="field">
+        <label class="field__label" for="password">Password</label>
+        <div class="password">
+          <input class="input password__input" id="password" name="password" type="password"
+                 autocomplete="current-password" placeholder="Your password" required>
+          <button class="password__toggle" type="button" id="password-toggle"
+                  aria-controls="password" aria-pressed="false" aria-label="Show password">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><circle cx="12" cy="12" r="3" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="message message--error" id="login-error" role="alert" hidden>
+        <svg class="message__icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 7v6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="16.5" r="1.2" fill="currentColor"/></svg>
+        <span id="login-error-text"></span>
+      </div>
+
+      <button class="btn btn--primary btn--block login__submit" type="submit" id="login-submit">
+        <span class="spinner" aria-hidden="true" hidden></span>
+        <span class="login__submit-label">Login to Dashboard</span>
+      </button>
+
+      <p class="login__status visually-hidden" id="login-status" aria-live="polite"></p>
+    </form>
+
+    <p class="login__footer">Connected to ThingsBoard Cloud · session ends when you close this tab</p>
+  </main>
+</body>
+</html>
