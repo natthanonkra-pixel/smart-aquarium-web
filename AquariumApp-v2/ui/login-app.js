@@ -7,12 +7,11 @@ import React, { useState, useRef } from 'react';
 import { createRoot } from 'react-dom/client';
 import { motion } from 'framer-motion';
 import {
-  User, Lock, Eye, EyeOff, LogIn, CircleAlert, Cloud, FlaskConical,
+  User, Lock, Eye, EyeOff, LogIn, CircleAlert, Cloud,
 } from 'lucide-react';
 import { html } from './h.js';
 import { PAGES } from '../js/config.js';
 import { signIn, LoginError, MESSAGES } from '../js/auth.js';
-import { enterDemo, DEMO_KEY } from './data.js';
 import { Header } from './components.js';
 import AquariumTank from './tank3d.js';
 
@@ -38,7 +37,6 @@ function LoginCard() {
     setError(null);
     setBusy(true);
     try {
-      try { window.sessionStorage.removeItem(DEMO_KEY); } catch { /* ignore */ }
       await signIn(user, password);
       window.location.replace(PAGES.dashboard);
     } catch (err) {
@@ -50,11 +48,6 @@ function LoginCard() {
     }
   };
 
-  const demo = () => {
-    enterDemo();
-    window.location.replace(PAGES.dashboard);
-  };
-
   const invalid = (f) => String(Boolean(error && error.fields.includes(f)));
 
   return html`
@@ -62,7 +55,7 @@ function LoginCard() {
       initial=${{ opacity: 0, x: 30 }} animate=${{ opacity: 1, x: 0 }} transition=${{ duration: 0.6, delay: 0.15 }}
       className="glass w-full max-w-md p-7 sm:p-8">
       <p className="text-xs font-semibold uppercase tracking-[0.25em] text-cyan-300/80">Smart Aquarium</p>
-      <h2 className="mt-1 text-2xl font-bold text-white">Tank Monitor</h2>
+      <h2 className="mt-1 text-2xl font-bold text-white">Aquarium Control Center</h2>
       <p className="mt-4 text-lg font-semibold text-white">Sign in</p>
       <div className="mb-4"></div>
 
@@ -99,11 +92,6 @@ function LoginCard() {
         ${busy
           ? html`<span className="spin h-4 w-4 rounded-full border-2 border-slate-900/30 border-t-slate-900"></span> Signing in…`
           : html`<${LogIn} size=${18} /> Login to Dashboard`}
-      </button>
-
-      <button type="button" onClick=${demo} disabled=${busy}
-        className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl border border-amber-300/40 bg-amber-300/10 py-2.5 text-sm font-semibold text-amber-200 transition hover:bg-amber-300/20">
-        <${FlaskConical} size=${16} /> Try Demo Mode (simulated data)
       </button>
 
       <p className="mt-5 flex items-center justify-center gap-2 text-xs text-cyan-100/50">

@@ -12,7 +12,7 @@ dropped onto Netlify as-is.
 ## Data
 - Live: `js/ws.js` (WebSocket telemetry), `js/rpc.js` (feed RPC), `js/telemetry.js` (validation).
   Tokens are kept in `sessionStorage` only and are never written in the code.
-- Demo Mode ("Try Demo Mode" button): simulated values, always labelled "Demo Mode".
+- No simulated data: if the device is offline the header shows "No live data".
 
 ## Run locally on Windows
 ```powershell

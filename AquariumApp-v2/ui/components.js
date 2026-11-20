@@ -6,7 +6,7 @@ import {
 } from 'recharts';
 import {
   Fish, Settings, Maximize2, Minimize2, Thermometer, Droplets, Sun, Utensils,
-  TrendingUp, TrendingDown, Minus, TriangleAlert, Cpu, LogOut, FlaskConical,
+  TrendingUp, TrendingDown, Minus, TriangleAlert, Cpu, LogOut,
 } from 'lucide-react';
 import { html } from './h.js';
 import { val } from './data.js';
@@ -25,7 +25,6 @@ export const hm = (ts) => {
 
 const CONN_STYLE = {
   live: { dot: 'bg-emerald-400', text: 'text-emerald-300' },
-  demo: { dot: 'bg-amber-400', text: 'text-amber-300' },
   connecting: { dot: 'bg-sky-400', text: 'text-sky-300' },
   reconnecting: { dot: 'bg-orange-400', text: 'text-orange-300' },
   stale: { dot: 'bg-slate-400', text: 'text-slate-300' },
@@ -41,14 +40,7 @@ export function StatusPill({ conn }) {
     </div>`;
 }
 
-export function DemoBadge() {
-  return html`
-    <div className="flex items-center gap-1.5 rounded-full border border-amber-400/50 bg-amber-400/15 px-3 py-1 text-xs font-bold uppercase tracking-wider text-amber-300">
-      <${FlaskConical} size=${14} /> Demo Mode · simulated data
-    </div>`;
-}
-
-export function Header({ conn, demo, onSettings, onLogout }) {
+export function Header({ conn, onSettings, onLogout }) {
   const [full, setFull] = React.useState(false);
   React.useEffect(() => {
     const h = () => setFull(Boolean(document.fullscreenElement));
@@ -72,7 +64,6 @@ export function Header({ conn, demo, onSettings, onLogout }) {
         </div>
       </div>
       <div className="flex items-center gap-2">
-        ${demo && html`<div className="hidden sm:block"><${DemoBadge} /></div>`}
         <${StatusPill} conn=${conn} />
         ${onSettings && html`<button className=${iconBtn} onClick=${onSettings} aria-label="Settings"><${Settings} size=${18} /></button>`}
         <button className=${iconBtn} onClick=${toggleFull} aria-label=${full ? 'Exit full screen' : 'Full screen'}>

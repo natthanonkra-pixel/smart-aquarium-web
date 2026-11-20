@@ -10,7 +10,7 @@ import {
 } from 'lucide-react';
 import { html } from './h.js';
 import { useAquarium, val, logout } from './data.js';
-import { Header, StatCards, TempChart, AiBanner, AlertBanners, DemoBadge, hms } from './components.js';
+import { Header, StatCards, TempChart, AiBanner, AlertBanners, hms } from './components.js';
 import AquariumTank from './tank3d.js';
 
 /* ---------- toast ------------------------------------------------------ */
@@ -36,7 +36,7 @@ function Toast({ toast }) {
 
 /* ---------- settings / info panel -------------------------------------- */
 
-function SettingsPanel({ open, onClose, mode, conn, lastTs }) {
+function SettingsPanel({ open, onClose, conn, lastTs }) {
   return html`
     <${AnimatePresence}>
       ${open && html`
@@ -50,7 +50,7 @@ function SettingsPanel({ open, onClose, mode, conn, lastTs }) {
               <button onClick=${onClose} aria-label="Close" className="text-cyan-200 hover:text-white"><${X} size=${20} /></button>
             </div>
             <dl className="space-y-2 text-sm">
-              <div className="flex justify-between gap-4"><dt className="text-cyan-100/60">Data source</dt><dd className="text-white">${mode === 'demo' ? 'Demo Mode (simulated)' : 'ThingsBoard Cloud'}</dd></div>
+              <div className="flex justify-between gap-4"><dt className="text-cyan-100/60">Data source</dt><dd className="text-white">ThingsBoard Cloud</dd></div>
               <div className="flex justify-between gap-4"><dt className="text-cyan-100/60">Connection</dt><dd className="text-white">${conn.label}</dd></div>
               <div className="flex justify-between gap-4"><dt className="text-cyan-100/60">Last update</dt><dd className="text-white">${lastTs ? hms(lastTs) : '--'}</dd></div>
               <div className="flex justify-between gap-4"><dt className="text-cyan-100/60">Controller</dt><dd className="text-white">ESP32-S3</dd></div>
@@ -93,7 +93,7 @@ function Row({ icon, label, value, tone = 'text-white' }) {
 /* ---------- app -------------------------------------------------------- */
 
 function App() {
-  const { mode, values, history, conn, lastTs, feed, feedTick } = useAquarium();
+  const { values, history, conn, lastTs, feed, feedTick } = useAquarium();
   const [feeding, setFeeding] = useState(false);
   const [toast, setToast] = useState(null);
   const [settings, setSettings] = useState(false);
@@ -129,9 +129,8 @@ function App() {
 
   return html`
     <div className="mx-auto flex min-h-screen max-w-[1500px] flex-col">
-      <${Header} conn=${conn} demo=${mode === 'demo'} onSettings=${() => setSettings(true)} onLogout=${logout} />
+      <${Header} conn=${conn} onSettings=${() => setSettings(true)} onLogout=${logout} />
       <main className="flex flex-1 flex-col gap-4 px-4 pb-8 sm:px-8">
-        ${mode === 'demo' && html`<div className="sm:hidden"><${DemoBadge} /></div>`}
         <${AiBanner} values=${values} />
         <${AlertBanners} values=${values} />
 
@@ -139,7 +138,6 @@ function App() {
           <div className="glass relative flex flex-col overflow-hidden">
             <div className="absolute left-4 top-4 z-10 flex flex-wrap gap-2">
               <span className="rounded-full bg-slate-900/60 px-3 py-1 text-xs text-cyan-100/80">3D Tank View</span>
-              ${mode === 'demo' && html`<span className="rounded-full bg-amber-400/20 px-3 py-1 text-xs font-bold text-amber-300">DEMO</span>`}
             </div>
             <div className="h-[340px] sm:h-[460px] xl:h-auto xl:min-h-[560px] xl:flex-1">
               <${AquariumTank} temperature=${fault ? undefined : temp} waterLow=${low === true} sun=${sun}
@@ -162,7 +160,7 @@ function App() {
                   value=${fan == null ? '--' : fan ? 'ON' : 'OFF'} tone=${fan ? 'text-cyan-300' : 'text-white'} />
               </div>
             </div>
-            <${TempChart} history=${history} live=${conn.state === 'live' || conn.state === 'demo'} />
+            <${TempChart} history=${history} live=${conn.state === 'live'} />
             <div>
               <h2 className="mb-2 text-sm font-semibold uppercase tracking-wider text-cyan-200">Quick Controls</h2>
               <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 xl:grid-cols-2">
@@ -181,10 +179,10 @@ function App() {
 
         <${StatCards} values=${values} history=${history} onFeed=${onFeed} feeding=${feeding} />
         <p className="text-center text-xs text-cyan-100/40">
-          ${mode === 'demo' ? 'Demo Mode — values are simulated in the browser, not from the tank.' : `Live from ThingsBoard Cloud · last update ${lastTs ? hms(lastTs) : '--'}`}
+          Live from ThingsBoard Cloud · last update ${lastTs ? hms(lastTs) : '--'}
         </p>
       </main>
-      <${SettingsPanel} open=${settings} onClose=${() => setSettings(false)} mode=${mode} conn=${conn} lastTs=${lastTs} />
+      <${SettingsPanel} open=${settings} onClose=${() => setSettings(false)} conn=${conn} lastTs=${lastTs} />
       <${Toast} toast=${toast} />
     </div>`;
 }
