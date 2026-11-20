@@ -64,7 +64,7 @@ function LoginCard() {
       <p className="text-xs font-semibold uppercase tracking-[0.25em] text-cyan-300/80">Smart Aquarium</p>
       <h2 className="mt-1 text-2xl font-bold text-white">Tank Monitor</h2>
       <p className="mt-4 text-lg font-semibold text-white">Sign in</p>
-      <p className="mb-5 text-sm text-cyan-100/60">Use your customer account to watch water temperature, water level and light, and to feed the fish remotely.</p>
+      <div className="mb-4"></div>
 
       <label className="mb-1.5 block text-sm text-cyan-100/80" htmlFor="username">Username</label>
       <div className="relative mb-4">
