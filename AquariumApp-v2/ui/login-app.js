@@ -8,7 +8,6 @@ import { createRoot } from 'react-dom/client';
 import { motion } from 'framer-motion';
 import {
   User, Lock, Eye, EyeOff, LogIn, CircleAlert, Cloud, FlaskConical,
-  Thermometer, Droplets, Sun, Utensils, Cpu,
 } from 'lucide-react';
 import { html } from './h.js';
 import { PAGES } from '../js/config.js';
@@ -113,36 +112,52 @@ function LoginCard() {
     </${motion.form}>`;
 }
 
-/** What the system does — a static overview, no sensor values before sign-in. */
-const FEATURES = [
-  { icon: Thermometer, title: 'Temperature control', text: 'DS18B20 + cooling fan with hysteresis', tone: 'text-cyan-300' },
-  { icon: Droplets, title: 'Water level alert', text: 'Float switch + buzzer warning', tone: 'text-sky-300' },
-  { icon: Sun, title: 'Sunrise lighting', text: 'LED PWM follows an RTC day cycle', tone: 'text-amber-300' },
-  { icon: Utensils, title: 'Scheduled feeding', text: 'Servo feeder by time or remote', tone: 'text-emerald-300' },
-  { icon: Cpu, title: 'TinyML anomaly', text: 'On-device temperature pattern check', tone: 'text-yellow-300' },
-];
+/* ---------- decorative underwater ambience (no data) -------------------- */
 
-function Features() {
+// two identical periods per path so a -50% shift loops seamlessly
+const wavePath = (h, amp) => {
+  let d = `M0 ${h}`;
+  for (let i = 0; i < 4; i += 1) {
+    const x = i * 720;
+    d += ` C ${x + 180} ${h - amp}, ${x + 540} ${h + amp}, ${x + 720} ${h}`;
+  }
+  return `${d} L 2880 200 L 0 200 Z`;
+};
+
+const BUBBLES = Array.from({ length: 22 }, (_, i) => {
+  const r = (n) => ((Math.sin(i * 91.7 + n * 13.3) * 9999) % 1 + 1) % 1;
+  return { left: `${r(1) * 100}%`, size: 6 + r(2) * 18, dur: 10 + r(3) * 14, delay: -r(4) * 20 };
+});
+
+function Ambient() {
   return html`
-    <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
-      ${FEATURES.map((f, i) => html`
-        <${motion.div} key=${f.title} className="glass flex items-start gap-3 p-4"
-          initial=${{ opacity: 0, y: 16 }} animate=${{ opacity: 1, y: 0 }} transition=${{ delay: 0.3 + i * 0.07 }}
-          whileHover=${{ y: -3 }}>
-          <span className=${`grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-slate-900/60 ${f.tone}`}><${f.icon} size=${18} /></span>
-          <div className="min-w-0">
-            <p className="text-sm font-semibold text-white">${f.title}</p>
-            <p className="text-xs leading-snug text-cyan-100/55">${f.text}</p>
-          </div>
-        </${motion.div}>`)}
+    <div className="ambient" aria-hidden="true">
+      ${[8, 30, 55, 78].map((x, i) => html`
+        <div key=${x} className="ray" style=${{ left: `${x}%`, transform: `rotate(${(i - 1.5) * 7}deg)`, animationDelay: `${-i * 2.3}s` }}></div>`)}
+      ${BUBBLES.map((b, i) => html`
+        <span key=${i} className="bubble" style=${{
+          left: b.left, width: b.size, height: b.size,
+          animationDuration: `${b.dur}s`, animationDelay: `${b.delay}s`,
+        }}></span>`)}
+      <svg className="wave w1" viewBox="0 0 2880 200" preserveAspectRatio="none">
+        <path d=${wavePath(90, 40)} fill="rgba(14,116,144,0.22)" />
+      </svg>
+      <svg className="wave w2" viewBox="0 0 2880 200" preserveAspectRatio="none">
+        <path d=${wavePath(110, 30)} fill="rgba(34,211,238,0.14)" />
+      </svg>
+      <svg className="wave w3" viewBox="0 0 2880 200" preserveAspectRatio="none">
+        <path d=${wavePath(120, 22)} fill="rgba(56,189,248,0.12)" stroke="rgba(103,232,249,0.6)" strokeWidth="2" />
+      </svg>
+      <div className="glow-line"></div>
     </div>`;
 }
 
 function App() {
   return html`
-    <div className="mx-auto flex min-h-screen max-w-[1400px] flex-col">
+    <${Ambient} />
+    <div className="relative z-10 mx-auto flex min-h-screen max-w-[1400px] flex-col">
       <${Header} conn=${{ state: 'connecting', label: 'Ready to connect' }} />
-      <main className="flex flex-1 flex-col gap-6 px-4 pb-8 sm:px-8">
+      <main className="flex flex-1 flex-col gap-6 px-4 pb-28 sm:px-8">
         <div className="grid flex-1 grid-cols-1 items-center gap-6 lg:grid-cols-[1.45fr_1fr]">
           <${motion.div} initial=${{ opacity: 0, scale: 0.96 }} animate=${{ opacity: 1, scale: 1 }} transition=${{ duration: 0.8 }}
             className="relative h-[340px] sm:h-[460px] lg:h-[560px]">
@@ -151,7 +166,6 @@ function App() {
           </${motion.div}>
           <div className="flex min-w-0 justify-center lg:justify-end"><${LoginCard} /></div>
         </div>
-        <${Features} />
       </main>
     </div>`;
 }
