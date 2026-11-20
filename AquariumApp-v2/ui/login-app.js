@@ -54,8 +54,8 @@ function LoginCard() {
     <${motion.form} onSubmit=${submit} noValidate=${true}
       initial=${{ opacity: 0, x: 30 }} animate=${{ opacity: 1, x: 0 }} transition=${{ duration: 0.6, delay: 0.15 }}
       className="glass w-full max-w-md p-7 sm:p-8">
-      <p className="text-xs font-semibold uppercase tracking-[0.25em] text-cyan-300/80">Smart Aquarium</p>
-      <h2 className="mt-1 text-2xl font-bold text-white">Aquarium Control Center</h2>
+      <p className="text-xs font-semibold uppercase tracking-[0.25em] text-cyan-300/80">Aquarium Control Center</p>
+      <h2 className="mt-1 text-2xl font-bold text-white">Smart Aquarium</h2>
       <p className="mt-4 text-lg font-semibold text-white">Sign in</p>
       <div className="mb-4"></div>
 
