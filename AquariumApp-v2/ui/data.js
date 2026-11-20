@@ -164,7 +164,8 @@ export function useAquarium({ preview = false } = {}) {
   else if (socketState === 'reconnecting') conn = { state: 'reconnecting', label: 'Reconnectingâ€¦' };
   else if (socketState === 'connecting') conn = { state: 'connecting', label: 'Connectingâ€¦' };
   else {
-    const waited = lastAt ? now - lastAt : now - openedAt.current;
+    // age of the newest data point (server timestamp), so an old snapshot is not shown as "online"
+    const waited = lastTs ? now - lastTs : now - openedAt.current;
     conn = waited > STALE_AFTER_MS
       ? { state: 'stale', label: 'No live data' }
       : lastAt ? { state: 'live', label: 'System Online' } : { state: 'connecting', label: 'Waiting for data' };
