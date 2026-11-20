@@ -116,14 +116,14 @@ function App() {
     <div className="mx-auto flex min-h-screen max-w-[1400px] flex-col">
       <${Header} conn=${{ state: 'connecting', label: 'Ready to connect' }} />
       <main className="flex flex-1 flex-col gap-6 px-4 pb-8 sm:px-8">
-        <div className="grid flex-1 items-center gap-6 lg:grid-cols-[1.45fr_1fr]">
+        <div className="grid flex-1 grid-cols-1 items-center gap-6 lg:grid-cols-[1.45fr_1fr]">
           <${motion.div} initial=${{ opacity: 0, scale: 0.96 }} animate=${{ opacity: 1, scale: 1 }} transition=${{ duration: 0.8 }}
             className="relative h-[340px] sm:h-[460px] lg:h-[560px]">
             <${AquariumTank} temperature=${val(values.temperature)} waterLow=${false}
               sun=${Math.max(70, val(values.sun) || 0)} fan=${val(values.fan)} className="h-full w-full" />
             <p className="pointer-events-none absolute bottom-2 left-1/2 -translate-x-1/2 text-xs text-cyan-100/40">Drag to rotate · scroll to zoom</p>
           </${motion.div}>
-          <div className="flex justify-center lg:justify-end"><${LoginCard} /></div>
+          <div className="flex min-w-0 justify-center lg:justify-end"><${LoginCard} /></div>
         </div>
         <div>
           <p className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-amber-300/80">

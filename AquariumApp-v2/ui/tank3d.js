@@ -141,7 +141,66 @@ function Plants({ maxY }) {
       <${Plant} position=${[0.75, SAND, -0.7]} height=${top * 0.85} color="#4ade80" blades=${5} phase=${2.1} />
       <${Plant} position=${[1.8, SAND, -0.65]} height=${top * 0.6} color="#15803d" blades=${4} phase=${0.6} />
       <${Plant} position=${[-1.85, SAND, 0.6]} height=${top * 0.45} color="#84cc16" blades=${4} phase=${2.7} />
+      <${Plant} position=${[-1.25, SAND, -0.3]} height=${top * 0.5} color="#dc2626" blades=${5} phase=${1.9} />
+      <${Plant} position=${[1.45, SAND, 0.05]} height=${top * 0.4} color="#e11d48" blades=${4} phase=${0.3} />
+      <${Plant} position=${[0.1, SAND, -0.8]} height=${top * 0.95} color="#10b981" blades=${7} phase=${3.4} />
     </group>`;
+}
+
+/* ---------- light caustics + gravel ----------------------------------- */
+
+const CAUSTIC_VERT = `
+  varying vec2 vUv;
+  void main() { vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`;
+const CAUSTIC_FRAG = `
+  uniform float uTime;
+  uniform float uStrength;
+  varying vec2 vUv;
+  float wave(vec2 p, float t) {
+    return sin(p.x * 9.0 + t * 1.3 + sin(p.y * 7.0 + t)) + sin(p.y * 11.0 - t * 1.1 + sin(p.x * 6.0 - t * 0.7));
+  }
+  void main() {
+    vec2 p = vUv * vec2(2.0, 1.0);
+    float c = abs(wave(p, uTime)) * abs(wave(p * 1.7 + 3.0, uTime * 0.8));
+    c = pow(clamp(1.0 - c * 0.5, 0.0, 1.0), 6.0);
+    float edge = smoothstep(0.0, 0.08, vUv.x) * smoothstep(1.0, 0.92, vUv.x) * smoothstep(0.0, 0.1, vUv.y) * smoothstep(1.0, 0.9, vUv.y);
+    gl_FragColor = vec4(vec3(0.6, 0.95, 1.0) * c * uStrength * edge, 1.0);
+  }`;
+
+/** Shimmering light pattern; used on the sand and on the water surface. */
+function Caustics({ position, rotation, size, strength = 0.9, sun }) {
+  const mat = useRef();
+  const uniforms = useMemo(() => ({ uTime: { value: 0 }, uStrength: { value: strength } }), [strength]);
+  const k = typeof sun === 'number' ? 0.35 + (sun / 100) * 0.65 : 0.8;
+  useFrame(({ clock }, dt) => {
+    if (!mat.current) return;
+    mat.current.uniforms.uTime.value = clock.elapsedTime;
+    const u = mat.current.uniforms.uStrength;
+    u.value += (strength * k - u.value) * Math.min(dt * 1.5, 1); // light changes slowly
+  });
+  return html`
+    <mesh position=${position} rotation=${rotation} renderOrder=${2}>
+      <planeGeometry args=${size} />
+      <shaderMaterial ref=${mat} vertexShader=${CAUSTIC_VERT} fragmentShader=${CAUSTIC_FRAG}
+        uniforms=${uniforms} transparent=${true} depthWrite=${false} blending=${THREE.AdditiveBlending} />
+    </mesh>`;
+}
+
+function Gravel() {
+  const stones = useMemo(() => Array.from({ length: 70 }, (_, i) => {
+    const r = (n) => ((Math.sin(i * 12.9898 + n * 78.233) * 43758.5453) % 1 + 1) % 1;
+    const tones = ['#e7e5e4', '#a8a29e', '#d6d3d1', '#78716c', '#f5f5f4'];
+    return {
+      p: [(r(1) - 0.5) * (W - 0.3), SAND + 0.02, (r(2) - 0.5) * (D - 0.3)],
+      s: 0.035 + r(3) * 0.04,
+      c: tones[i % tones.length],
+    };
+  }), []);
+  return html`<group>${stones.map((st, i) => html`
+    <mesh key=${i} position=${st.p} scale=${[st.s, st.s * 0.6, st.s]}>
+      <sphereGeometry args=${[1, 6, 4]} />
+      <meshStandardMaterial color=${st.c} roughness=${0.8} />
+    </mesh>`)}</group>`;
 }
 
 /* ---------- water ------------------------------------------------------ */
@@ -191,25 +250,49 @@ const SPECIES = {
 function Fish({ kind, radius, speed, phase, yBase, yAmp, levelRef, feedRef }) {
   const ref = useRef();
   const tail = useRef();
+  const finL = useRef();
+  const finR = useRef();
   const sp = SPECIES[kind];
-  useFrame(({ clock }) => {
+  // swim state: angle on the path, current/target direction, next time to turn around
+  const st = useRef({ a: phase, dir: Math.sign(speed) || 1, target: Math.sign(speed) || 1, next: 5 + phase * 2, heading: 0, wig: 0 });
+  useFrame(({ clock }, dt) => {
     const g = ref.current;
     if (!g) return;
-    const t = clock.elapsedTime * speed + phase;
+    const s = st.current;
+    const now = clock.elapsedTime;
+    if (now > s.next) {
+      // turn around now and then (schools turn together because they share the same seed timing)
+      s.target = -s.target;
+      s.next = now + 6 + ((phase * 97 + now) % 9);
+    }
+    s.dir += (s.target - s.dir) * Math.min(dt * 1.2, 1);
+    const pace = Math.abs(speed) * (0.35 + 0.65 * Math.abs(s.dir));
+    s.a += Math.sign(s.dir || 1) * pace * dt;
+    const t = s.a;
     const rx = radius * (W / 2 - 0.45);
     const rz = radius * (D / 2 - 0.35);
     const x = Math.cos(t) * rx;
     const z = Math.sin(t) * rz;
     const ceiling = levelRef.current * H - 0.25;
-    let y = Math.min(yBase + Math.sin(t * 2.3) * yAmp, ceiling);
+    let y = Math.min(yBase + Math.sin(now * Math.abs(speed) * 2.3 + phase) * yAmp, ceiling);
     // swim up toward food for a few seconds after feeding
-    const sinceFeed = clock.elapsedTime - feedRef.current;
+    const sinceFeed = now - feedRef.current;
     if (sinceFeed < 6) y += (ceiling - y) * Math.max(0, 1 - sinceFeed / 6) * 0.7;
     g.position.set(x, Math.max(y, SAND + 0.2), z);
-    const dx = -Math.sin(t) * rx;
-    const dz = Math.cos(t) * rz;
-    g.rotation.y = Math.atan2(-dz, dx);
-    if (tail.current) tail.current.rotation.y = Math.sin(clock.elapsedTime * 12 + phase) * 0.5;
+    const sign = Math.sign(s.dir || 1);
+    const dx = -Math.sin(t) * rx * sign;
+    const dz = Math.cos(t) * rz * sign;
+    const want = Math.atan2(-dz, dx);
+    let diff = want - s.heading;
+    diff = Math.atan2(Math.sin(diff), Math.cos(diff));
+    s.heading += diff * Math.min(dt * 4, 1); // smooth turn instead of snapping
+    g.rotation.y = s.heading;
+    g.rotation.z = Math.sin(now * 1.7 + phase) * 0.08; // gentle body roll
+    s.wig += dt * (8 + 10 * Math.abs(s.dir));
+    if (tail.current) tail.current.rotation.y = Math.sin(s.wig) * 0.5;
+    const flap = Math.sin(s.wig * 0.6) * 0.45;
+    if (finL.current) finL.current.rotation.y = flap;
+    if (finR.current) finR.current.rotation.y = -flap;
   });
   const s = sp.size;
   return html`
@@ -229,6 +312,22 @@ function Fish({ kind, radius, speed, phase, yBase, yAmp, levelRef, feedRef }) {
           <meshStandardMaterial color=${sp.fin} roughness=${0.5} />
         </mesh>
       </group>
+      <group ref=${finL} position=${[0.3, -0.25, 0.45]}>
+        <mesh position=${[-0.25, 0, 0.15]} rotation=${[0.4, 0, 0]} scale=${[0.45, 0.06, 0.3]}>
+          <sphereGeometry args=${[1, 10, 6]} />
+          <meshStandardMaterial color=${sp.fin} transparent=${true} opacity=${0.85} />
+        </mesh>
+      </group>
+      <group ref=${finR} position=${[0.3, -0.25, -0.45]}>
+        <mesh position=${[-0.25, 0, -0.15]} rotation=${[-0.4, 0, 0]} scale=${[0.45, 0.06, 0.3]}>
+          <sphereGeometry args=${[1, 10, 6]} />
+          <meshStandardMaterial color=${sp.fin} transparent=${true} opacity=${0.85} />
+        </mesh>
+      </group>
+      <mesh position=${[0, 0.85, 0]} rotation=${[0, 0, -0.3]} scale=${[0.7, 0.35, 0.06]}>
+        <sphereGeometry args=${[1, 10, 6]} />
+        <meshStandardMaterial color=${sp.fin} transparent=${true} opacity=${0.9} />
+      </mesh>
       <mesh position=${[1.15, 0.25, 0.35]}>
         <sphereGeometry args=${[0.13, 10, 8]} />
         <meshBasicMaterial color="#020617" />
@@ -377,6 +476,9 @@ function Scene({ temperature, waterLow, sun, fan, feedTick }) {
       <pointLight position=${[0, -0.5, 3]} intensity=${3} color="#22d3ee" distance=${7} />
       <${Base} />
       <${Sand} />
+      <${Gravel} />
+      <${Caustics} position=${[0, SAND + 0.012, 0]} rotation=${[-Math.PI / 2, 0, 0]} size=${[W - 0.06, D - 0.06]} strength=${0.9} sun=${sun} />
+      <${Caustics} position=${[0, level * H - 0.01, 0]} rotation=${[-Math.PI / 2, 0, 0]} size=${[W - 0.06, D - 0.06]} strength=${0.45} sun=${sun} />
       <${Rocks} />
       <${Plants} maxY=${level * H} />
       <${Water} level=${level} temperature=${temperature} />

@@ -135,7 +135,7 @@ function App() {
         <${AiBanner} values=${values} />
         <${AlertBanners} values=${values} />
 
-        <div className="grid gap-4 xl:grid-cols-[1.6fr_1fr]">
+        <div className="grid grid-cols-1 gap-4 xl:grid-cols-[1.6fr_1fr]">
           <div className="glass relative flex flex-col overflow-hidden">
             <div className="absolute left-4 top-4 z-10 flex flex-wrap gap-2">
               <span className="rounded-full bg-slate-900/60 px-3 py-1 text-xs text-cyan-100/80">3D Tank View</span>
